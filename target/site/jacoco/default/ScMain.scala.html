@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ScMain.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BDCC Spark Basics project</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">ScMain.scala</span></div><h1>ScMain.scala</h1><pre class="source lang-java linenums">import org.apache.spark.sql.SparkSession
+
+<span class="nc bnc" id="L3" title="All 2 branches missed.">object ScMain extends App {</span>
+
+<span class="nc" id="L5">  val sparkSession = SparkSession.builder()</span>
+<span class="nc" id="L6">    .appName(&quot;Executor for m06_sparkbasics_jvm_azure&quot;)</span>
+<span class="nc" id="L7">    .config(&quot;spark.master&quot;, &quot;local&quot;)</span>
+    .getOrCreate()
+
+<span class="nc" id="L10">  val sc = sparkSession.sparkContext</span>
+
+<span class="nc" id="L12">  sparkSession.conf.set(&quot;fs.azure.account.auth.type.bd201stacc.dfs.core.windows.net&quot;, &quot;OAuth&quot;)</span>
+<span class="nc" id="L13">  sparkSession.conf.set(&quot;fs.azure.account.oauth.provider.type.bd201stacc.dfs.core.windows.net&quot;, &quot;org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider&quot;)</span>
+<span class="nc" id="L14">  sparkSession.conf.set(&quot;fs.azure.account.oauth2.client.id.bd201stacc.dfs.core.windows.net&quot;, &quot;f3905ff9-16d4-43ac-9011-842b661d556d&quot;)</span>
+<span class="nc" id="L15">  sparkSession.conf.set(&quot;fs.azure.account.oauth2.client.secret.bd201stacc.dfs.core.windows.net&quot;, &quot;mAwIU~M4~xMYHi4YX_uT8qQ.ta2.LTYZxT&quot;)</span>
+<span class="nc" id="L16">  sparkSession.conf.set(&quot;fs.azure.account.oauth2.client.endpoint.bd201stacc.dfs.core.windows.net&quot;, &quot;https://login.microsoftonline.com/b41b72d0-4e9f-4c26-8a69-f949f367c91d/oauth2/token&quot;)</span>
+<span class="nc" id="L17">  val df = sparkSession.read.parquet(&quot;abfs://m06sparkbasics@bd201stacc.dfs.core.windows.net/weather&quot;)</span>
+<span class="nc" id="L18">  df.show()</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
