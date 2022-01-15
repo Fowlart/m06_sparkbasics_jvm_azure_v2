@@ -6,4 +6,4 @@ case class WeatherRecord(lng: String,
                          year: String,
                          month: String,
                          day: String
-                        ) {}
+                        )

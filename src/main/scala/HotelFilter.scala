@@ -1,53 +1,53 @@
-import ScMain.sparkSession
 import com.byteowls.jopencage.JOpenCageGeocoder
 import com.byteowls.jopencage.model.JOpenCageForwardRequest
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
 
-class HotelFilter extends java.io.Serializable {
+object HotelFilter {
 
   def retrieveCoordinates(street: String,
                           city: String,
-                          countryCode: String) = {
-    val jOpenCageGeocoder = new JOpenCageGeocoder("5f189b638d024369ac7318e4eedb9a5c")
+                          countryCode: String,
+                          geoCoderApiKey: String) = {
+    val jOpenCageGeocoder = new JOpenCageGeocoder(geoCoderApiKey)
     val request = new JOpenCageForwardRequest(s"$street, $city")
     request.setRestrictToCountryCode(countryCode.toLowerCase)
     val response = jOpenCageGeocoder.forward(request);
     response.getFirstPosition
   }
 
-  def cleanAndEnhanceHotelsDf(rowHotels: DataFrame, ss: SparkSession): DataFrame = {
+  def cleanAndEnhanceHotelsDf(rowHotels: DataFrame, ss: SparkSession, apiKey: String): Dataset[ConvertedHotel] = {
 
     import ss.implicits._
 
-    val hotelsRDD = rowHotels.as[Hotel].rdd
+    val hotelsRDD = rowHotels.as[Hotel]
 
     hotelsRDD.map(row => {
 
-      if (row.Latitude.isEmpty
-        || row.Longitude.isEmpty
-        || "NA".equals(row.Latitude.get)
-        || "NA".equals(row.Longitude.get) ) {
+      if (row.latitude.isEmpty
+        || row.longitude.isEmpty
+        || "NA".equals(row.latitude.get)
+        || "NA".equals(row.longitude.get)) {
 
-        val retrievedCoordinates = retrieveCoordinates(row.Address, row.City, row.Country)
+        val retrievedCoordinates = retrieveCoordinates(row.address, row.city, row.country, apiKey)
 
         ConvertedHotel(
-          row.Id,
-          row.Name,
-          row.Country,
-          row.City,
-          row.Address,
+          row.id,
+          row.name,
+          row.country,
+          row.city,
+          row.address,
           retrievedCoordinates.getLat.doubleValue().toString,
           retrievedCoordinates.getLng.doubleValue().toString)
       }
       else
         ConvertedHotel(
-          row.Id,
-          row.Name,
-          row.Country,
-          row.City,
-          row.Address,
-          row.Latitude.get,
-          row.Longitude.get)
-    }).toDF("Id", "Name", "Country", "City", "Address", "Latitude", "Longitude")
+          row.id,
+          row.name,
+          row.country,
+          row.city,
+          row.address,
+          row.latitude.get,
+          row.longitude.get)
+    })
   }
 }

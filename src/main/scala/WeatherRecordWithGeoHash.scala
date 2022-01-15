@@ -6,5 +6,5 @@ case class WeatherRecordWithGeoHash(lng: String,
                                     year: String,
                                     month: String,
                                     day: String,
-                                    geohash: String
-                                   ) {}
+                                    weather_GeoHash: String
+                                   )

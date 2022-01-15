@@ -5,5 +5,4 @@ case class ConvertedHotelWithGeoHash(id: BigInt,
                                      address: String,
                                      latitude: String,
                                      longitude: String,
-                                     geohash: String
-                                    ) {}
+                                     geohash: String)

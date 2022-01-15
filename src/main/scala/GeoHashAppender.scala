@@ -1,37 +1,37 @@
 import ch.hsr.geohash.GeoHash
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
 
 import java.util.Objects
 
-class GeoHashAppender extends java.io.Serializable {
+object GeoHashAppender extends {
 
-  def addGeoHashToHotels(cleansedHotelDf: DataFrame, ss: SparkSession): DataFrame = {
+  def addGeoHashToHotels(cleansedHotelDf: Dataset[ConvertedHotel], ss: SparkSession): Dataset[ConvertedHotelWithGeoHash] = {
+
     import ss.implicits._
 
-    cleansedHotelDf.as[ConvertedHotel].rdd.map(location => {
+    cleansedHotelDf.map(location => {
 
-      val latitude = java.lang.Double.parseDouble(location.Latitude)
-      val longitude = java.lang.Double.parseDouble(location.Longitude)
+      val latitude = java.lang.Double.parseDouble(location.latitude)
+      val longitude = java.lang.Double.parseDouble(location.longitude)
 
       ConvertedHotelWithGeoHash(
-        location.Id,
-        location.Name,
-        location.Country,
-        location.City,
-        location.Address,
-        location.Latitude,
-        location.Longitude,
+        location.id,
+        location.name,
+        location.country,
+        location.city,
+        location.address,
+        location.latitude,
+        location.longitude,
         GeoHash.geoHashStringWithCharacterPrecision(latitude, longitude, 4)
       )
-    }).toDF("Id", "Name", "Country", "City", "Address", "Latitude", "Longitude", "GeoHash")
+    })
   }
 
 
-  def addGeoHashToWeather(weatherDf: DataFrame, ss: SparkSession): DataFrame = {
+  def addGeoHashToWeather(weatherDf: DataFrame, ss: SparkSession): Dataset[WeatherRecordWithGeoHash] = {
     import ss.implicits._
 
-    weatherDf.as[WeatherRecord].rdd
-      .filter(weatherRecord => {
+    weatherDf.as[WeatherRecord].filter(weatherRecord => {
         if (Objects.nonNull(weatherRecord.lat) && Objects.nonNull(weatherRecord.lng) && Objects.nonNull(weatherRecord.avg_tmpr_c)) {
           try {
             java.lang.Double.parseDouble(weatherRecord.lat)
@@ -56,6 +56,5 @@ class GeoHashAppender extends java.io.Serializable {
           GeoHash.geoHashStringWithCharacterPrecision( java.lang.Double.parseDouble(weatherRecord.lat),  java.lang.Double.parseDouble(weatherRecord.lng), 4)
         )
       })
-      .toDF("lng", "lat", "avg_tmpr_f", "avg_tmpr_c", "wthr_date", "year", "month", "day", "weather_GeoHash")
   }
 }

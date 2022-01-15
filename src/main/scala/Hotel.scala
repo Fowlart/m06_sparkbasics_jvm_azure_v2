@@ -1,7 +1,7 @@
-case class Hotel(Id: BigInt,
-                 Name: String,
-                 Country: String,
-                 City: String,
-                 Address: String,
-                 Latitude: Option[String],
-                 Longitude: Option[String]) {}
+case class Hotel(id: BigInt,
+                 name: String,
+                 country: String,
+                 city: String,
+                 address: String,
+                 latitude: Option[String],
+                 longitude: Option[String])
